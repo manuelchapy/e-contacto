@@ -1,0 +1,34 @@
+{
+  "name": "e-contacto-sistema",
+  "version": "1.0.0",
+  "description": "API para la app e-contacto",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run index.js",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manuelchapy/e-contacto.git"
+  },
+  "keywords": [
+    "WTFunk2794"
+  ],
+  "author": "Chapy, Isa, Heyner, Cony, Larry.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manuelchapy/e-contacto/issues"
+  },
+  "homepage": "https://github.com/manuelchapy/e-contacto#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "keygenerator": "^1.0.4",
+    "moment-timezone": "^0.5.31"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
