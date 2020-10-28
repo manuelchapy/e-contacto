@@ -26,7 +26,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "keygenerator": "^1.0.4",
-    "moment-timezone": "^0.5.31"
+    "moment-timezone": "^0.5.31",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
