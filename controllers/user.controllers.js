@@ -2,6 +2,9 @@ const userCtrl = {};
 const session = require('express-session');
 const connection = require('../src/database');
 const keygen = require("keygenerator");
+const bcrypt = require ('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../src/config');
 var _
 
 userCtrl.register = async(req,res) =>{
@@ -27,14 +30,16 @@ userCtrl.register = async(req,res) =>{
 	}
 
 	function registrar(){
-		//nombre, correo, pass, con pass, 
+		//nombre, correo, pass, con pass,
+			const salt = 10;
+			const passb = bcrypt.hashSync(passw, salt); 
 			connection.query('INSERT INTO `tbl_contacts` SET?', {
 			id_business: '1', 
 			id_ocupation: '1', 
 			id_card_template: '1', 
 			id_plan : '1', 
 			email, 
-			passw, 
+			passw: passb, 
 			first_name: firstName
 		}, (err, result) => {
 			if(err){
@@ -58,7 +63,13 @@ userCtrl.login = async(req,res) =>{
 	console.log('email', email)
 	const sql= "SELECT * FROM `tbl_contacts` WHERE email = '"+email+"'";
 	connection.query(sql, function(err, result, fie){
-		if(err){ throw err; res.send('3')};
+		if(err){ 
+			throw err; 
+			const response = {
+   			check:  "3"
+ 			};
+			res.send(response)
+		};
 
 		const query = result[0]
 		//res.json(query);
@@ -66,7 +77,7 @@ userCtrl.login = async(req,res) =>{
 		if(result.length <= 0){sendError()}
 		if(result.length > 0){
 			const query = result[0];
-			if(query.passw == passw){
+			if(bcrypt.compareSync(passw, query.passw) && email == query.email){
 				process(query)
 			}else{
 				sendError()
@@ -87,17 +98,32 @@ userCtrl.login = async(req,res) =>{
             email: query.email
 
         } 
+
+        const response = {
+   			check:  "1"
+ 		};
+ 		const token = jwt.sign(response, config.llave, {
+   			expiresIn: 60 * 60 * 24
+  		});
+
+  		response.token = token;
+
+  		console.log('EL TOKEN', token);
+
         _ = query.id_contact;
         console.log('funciona, bienvenido')
         console.log('VARIABLES DE SESION DESDE LOGIN', req.session.let);
-		res.send('1') //SE LOGUEO
+		res.send(response) //SE LOGUEO
 	}
 
 	function sendError(){
 		const errors = [];
 		errors.push({text: 'no puedes ingresar pa u.u, there is a problem'})
 		console.log('el email no existe o no estás registrado o pusiste mal la clave')
-		res.send('2') //no se logeo
+		const response = {
+   			check:  "2"
+ 		};
+		res.send(response) //no se logeo
 	}
 }
 
