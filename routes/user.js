@@ -11,7 +11,10 @@ router.route('/register')
 router.route('/login')
 		.post(Ctrlindex.login)
 
-router.route('/shareContact')
-		.get(Ctrlindex.shareContact)
+router.route('/addContact')
+		.post(Ctrlindex.addContact)
+
+router.route('/contactList')
+		.get(Ctrlindex.contactList)
 
 module.exports = router;

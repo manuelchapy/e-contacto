@@ -30,7 +30,8 @@
     "jsonwebtoken": "^8.5.1",
     "keygenerator": "^1.0.4",
     "moment-timezone": "^0.5.31",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "uniqid": "^5.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
