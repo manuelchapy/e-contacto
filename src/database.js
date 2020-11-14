@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 
-//mysql connection
+//mysql connectionn
 
 const connection = mysql.createConnection({
 	host: '74.208.147.248',
