@@ -240,7 +240,7 @@ userCtrl.addContact = async(req, res) =>{
 
 		//foto, nombre, apellido, profesion, empresa.
 		//const sql = "SELECT tbl_contacts.first_name,last_name,phone_number1 FROM
-		const sql= "SELECT id_contact_shared FROM `tbl_cards_shared` WHERE id_contact_shared = '"+query.id_contact+"'";
+		const sql= "SELECT id_contact_shared FROM `tbl_cards_shared` WHERE id_contact_shared = '"+query.id_contact+"' AND id_contact = '"+session.let.id+"'";
 		//const sql= "SELECT * FROM tbl_contacts";
 		connection.query(sql, function(err, result, fie){
 			if(err){ 
