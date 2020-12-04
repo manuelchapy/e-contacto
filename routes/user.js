@@ -17,4 +17,13 @@ router.route('/addContact')
 router.route('/contactList')
 		.get(Ctrlindex.contactList)
 
+router.route('/userInfo')
+		.get(Ctrlindex.userInfo)
+
+router.route('/contactInfo')
+		.get(Ctrlindex.contactInfo)
+
+router.route('/sendQr')
+		.get(Ctrlindex.sendQr)
+
 module.exports = router;
