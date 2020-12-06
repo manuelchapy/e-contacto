@@ -117,6 +117,7 @@ userCtrl.login = async(req,res) =>{
 	   			expiresIn: 60 * 60 * 24
 	  		});
 
+	 		//console.log('EL QR DESDE EL QUERY!!!!!!!!!!', query.tokenQr)
 	  		response.token = token;
 	  		session.let = {
 	            sesion: token,
@@ -124,9 +125,9 @@ userCtrl.login = async(req,res) =>{
 	            email: query.email,
 	            qr: query.tokenQr
        		 }
+       		 console.log('EL QR DESDE LA SESION!!!!!!!!!', session.let.qr)
 
-
-	  		console.log('EL TOKEN', token);
+	  		//console.log('EL TOKEN', token);
 
 	        console.log('funciona, bienvenido pero pilas, tiene que llenar el formulario de usuario')
 	        console.log('VARIABLES DE SESION DESDE LOGIN', session.let);
@@ -143,7 +144,8 @@ userCtrl.login = async(req,res) =>{
 	  		session.let = {
 	            sesion: token,
 	            id: query.id_contact,
-	            email: query.email
+	            email: query.email,
+	            qr: query.tokenQr
        		 }
 
 	  		console.log('EL TOKEN', token);
@@ -324,9 +326,9 @@ userCtrl.addContact = async(req, res) =>{
 						const perfil = {
 							check: '1', //se agrego usuario
 							addContact:{
-								firstName: query.first_name,
-								lastName: query.last_name,
-								phone_number: query.phone_number1
+								first_name: query.first_name,
+								last_name: query.last_name,
+								phone_number1: query.phone_number1
 							}
 						} 
 					
