@@ -1,16 +1,18 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const session = require('express-session');
 const cors = require('cors');
 const config = require('./config');
 const jwt = require('jsonwebtoken');
-bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
+require('dotenv').config()
 
 
 
 // settings
 app.set('port', process.env.PORT || 3000) //nombre de la variable, valor de la variable						
-
+app.use(bodyParser.json({limit: '50mb'}));
 
 
 
@@ -28,5 +30,8 @@ app.use(session({
 app.use(require('../routes'));
 app.use(require('../routes/index'));
 app.use(require('../routes/user'));
+
+//static files
+app.use('/public',express.static(path.join(__dirname, '../public')));
 
 module.exports = app;
