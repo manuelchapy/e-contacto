@@ -5,6 +5,10 @@ const router = Router();
 router.route('/completeUser')
 		.post(Ctrlindex.completeUser)
 
+router.route('/sendOcupations')
+		.get(Ctrlindex.sendOcupations)
+
+
 router.route('/register')
 		.post(Ctrlindex.register)
 

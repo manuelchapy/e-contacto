@@ -7,13 +7,25 @@ const jwt = require('jsonwebtoken');
 var uniqid = require('uniqid');
 const config = require('../src/config');
 var http = require('http'); 
+const fs = require ("fs");
+const path = require('path');
+const uniqueKeygen = require('unique-keygen');
+const cloudinary = require('cloudinary').v2;
+const request = require('request');
+const axios = require('axios');
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINAY_API_SECRET
+
+});
 
 
 userCtrl.register = async(req,res) =>{
 
 	console.log('FUNCIONO PAAAAAAAAAAA', req.body);
 	//res.send('JELOU');
-	const { id_business, id_ocupation, id_card_template, id_plan, email, passw, firstName 
+	const { id_business, id_ocupation, id_card_template, id_plan, email, passw, first_name 
 	} = req.body;
 
 	const sql= "SELECT * FROM `tbl_contacts` WHERE email = '"+email+"'";
@@ -32,11 +44,13 @@ userCtrl.register = async(req,res) =>{
 	})
 
 	function sendError(){
+		console.log('YA HAY UN MAIL')
 		res.send('2') // Hay un email como este, pen
 	}
 
 	function registrar(){
 		//nombre, correo, pass, con pass,
+			console.log('PASO A REGISTRAR')
 			const salt = 10;
 			const passb = bcrypt.hashSync(passw, salt); 
 			const qr = uniqid();
@@ -48,7 +62,7 @@ userCtrl.register = async(req,res) =>{
 			id_plan : '1', 
 			email, 
 			passw: passb, 
-			first_name: firstName,
+			first_name: first_name,
 			tokenQr: qr
 		}, (err, result) => {
 			if(err){
@@ -170,31 +184,134 @@ userCtrl.login = async(req,res) =>{
 	}
 }
 
+userCtrl.sendOcupations = async(req,res) =>{
+ if(req.headers.authorization == session.let.sesion){
+ 	const sql= "SELECT ocupation FROM tbl_ocupations";
+ 	connection.query(sql, function(err, result, fie){
+		if(err){ 
+			throw err; 
+			const response = {
+   			check:  "3" //error de conexion con la DB
+ 			};
+			res.send(response)
+		}else{
+			const response = {
+				check: '1',
+				ocupations: result
+			}
+			//console.log('send!!!!!!', result);
+			//console.log('send', result[0].ocupation);
+			res.send(response);
+		}
+		
+	})
+ }else{
+		res.send('0')
+		console.log('sesion expirada')
+ 	}
+
+}
+
+
 
 userCtrl.completeUser = async(req,res) =>{
 
+//console.log('authorization!!!!', req.headers.authorization)
+//console.log('sesion!!!!', session.let.sesion)
+
+ if(req.headers.authorization == undefined){
+ 	req.headers.authorization = ''
+ }
+
  if(req.headers.authorization == session.let.sesion){
 
- 	console.log("llegando desde flutter!!!!!!!!" , req.body);
-	const { id_business, id_ocupation, id_card_template, id_plan, email, passw, first_name, 
+ 	//console.log("llegando desde flutter!!!!!!!!" , req.body.img_64.slice(0,10));
+	const { id_business, ocupation, id_card_template, id_plan, email, passw, first_name, 
 	last_name, phone_number1, phone_number2, phone_number3, address, city, state, zip_code, website, twitter, linkedin, facebook, 
 	instagram } = req.body;
+	let base64 = req.body.img_64;
 
-	console.log('variables de sesion', session.let.id);
-	const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"' WHERE id_contact = '"+session.let.id+"'";
+	console.log('ocupacion', ocupation);
+	const sql= "SELECT ocupation, id_ocupation FROM tbl_ocupations";
+    connection.query(sql, function(err, result, fie){
+		if(err){ 
+			throw err; 
+			const response = {
+   			check:  "3" //error de conexion con la DB
+ 			};
+			res.send(response)
+		}else{
+			console.log('desde complete', result[0].ocupation)
+			sendUser(result, ocupation)
+			//console.log('el result desde query', result)
+			//res.send(result)
+		}
+	})
+
+async function sendUser(result){
+	let ocup = result;
+	let id_ocupation;
+	 //console.log('RESULT DESDE FUNCT', ocup)
+	 //console.log('SALIOOOO')
+	 for (var i = 0; i <= ocup.length - 1; i++) {
+	 	//console.log('ta entrando');
+	 	if(ocupation == result[i].ocupation){
+	 		//console.log('Funciono pa aqui está la vaina', ocup[i].ocupation, ocup[i].id_ocupation)
+	 		id_ocupation = result[i].id_ocupation;
+	 		break;
+	 	}
+	 }	
 	//console.log('ERRR LASTNAME', lastName)
-	
-		connection.query(sql, function (error, results, fields) {
+	let unique = uniqueKeygen(5)
+	let imgNameCloud = unique+req.body.img_name;
+	if(base64.length > 0){
+		var ReadableData = require('stream').Readable;
+		const imageBufferData = Buffer.from(base64, 'base64');
+		var streamObj = new ReadableData();
+		streamObj.push(imageBufferData)
+		streamObj.push(null)
+		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
+				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
-				console.log('ERROR', results);
+			}else{
+				console.log('!!!!! LA URL PA', result.secure_url)
+				console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
+				const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"',id_ocupation ='"+id_ocupation+"', img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
+				connection.query(sql, function (error, results, fields) {
+					if(error){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('2');
+						console.log('ERROR', results);
+					}
+					if(results){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('1');
+						console.log('Modifico pa con imagen', results);
+					}
+				});
 			}
-			if(results){
-				res.send('1');
-				console.log('Modifico pa', results);
-			}
-  		
-	});
+			console.log('!!!ERRROR CLOUD', error)
+		});
+
+	}else{
+		//console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
+		//const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
+		const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
+				connection.query(sql, function (error, results, fields) {
+					if(error){
+						res.send('2');
+						console.log('ERROR', results);
+					}
+					if(results){
+						res.send('1');
+						console.log('Modifico pa sin imagen', results);
+					}
+				});
+	}
+}
+	
  }else{
 		res.send('0')
 		console.log('sesion expirada')
@@ -207,7 +324,7 @@ userCtrl.contactList = async(req, res) =>{
 	if(req.headers.authorization == session.let.sesion){
 		
 		//console.log('EL TOKEN COMO GET',session.let.id);
-		const sql = "SELECT tbl_contacts.email, first_name, last_name, phone_number1, tbl_ocupations.id_ocupation, website, tbl_ocupations.ocupation FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared=tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
+		const sql = "SELECT tbl_contacts.email, first_name, last_name, phone_number1, img_url,tbl_ocupations.id_ocupation, website, tbl_ocupations.ocupation FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared=tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
 		console.log('sesion desde app',req.headers.authorization)
 		console.log('sesion desde api', session.let.sesion)
 		connection.query(sql, function(err, result, fie){
@@ -351,20 +468,33 @@ userCtrl.userInfo = async(req, res) =>{
 
 if(req.headers.authorization == session.let.sesion){
 	console.log('estas en userInfo')
-	const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, address, website, facebook, instagram, twitter, linkedin FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
+	//const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
+	const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name, tbl_ocupations.ocupation, tbl_ocupations.id_ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
+
 	connection.query(sql, function(err, result, fie){
 		if(err) {
 				console.log('error en la conexion intente de nuevo', err)
 				//connection.end();
 				res.send('3') //no pudo completar el registro
 			}else{
-				console.log('pa ve el result', result);
+				console.log('pa ve el result', result[0]);
 				//const resultJSON = result.map(res => res.toJSON());
-				const user = {
-					check: '1', //envioe
-					contact: result[0]
+				let imgCloud = result[0].img_url
+				let base64;
+				console.log('LA IMAGEN PAAAAA', imgCloud);
+				const download = async () => {
+				  		let image = await axios.get(imgCloud, {responseType: 'arraybuffer'});
+						base64 = Buffer.from(image.data).toString('base64');
+						//console.log(base64, 'EL RAW DE AXIOOOOS')
+						result[0].img_64 = base64
+						const user = {
+							check: '1', //envioe
+							contact: result[0]
+						}
+						res.send(user);	
 				}
-				res.send(user);	
+				download();
+				////////////////ENVIO DE JSON//////////////////////////////////////7
 			}	
 	})
 }else{
@@ -383,7 +513,7 @@ userCtrl.contactInfo = async(req, res) =>{
   if(req.headers.authorization == session.let.sesion){
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
-		const sql= "SELECT email, first_name, last_name, phone_number1, address, website FROM `tbl_contacts` WHERE email = '"+req.headers.email+"'";
+		const sql= "SELECT email, first_name, last_name, phone_number1, address, website, tbl_ocupations.ocupation, tbl_ocupations.id_ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
 		connection.query(sql, function(err, result, fie){
 			if(err) {
 					console.log('error en la conexion intente de nuevo', err)

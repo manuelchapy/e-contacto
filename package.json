@@ -22,16 +22,23 @@
   },
   "homepage": "https://github.com/manuelchapy/e-contacto#readme",
   "dependencies": {
+    "axios": "^0.21.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "cloudinary": "^1.23.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
     "keygenerator": "^1.0.4",
     "moment-timezone": "^0.5.31",
+    "multer": "^1.4.2",
     "mysql": "^2.18.1",
-    "uniqid": "^5.2.0"
+    "request": "^2.88.2",
+    "uniqid": "^5.2.0",
+    "unique-keygen": "^1.1.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
