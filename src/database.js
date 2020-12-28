@@ -17,7 +17,7 @@ const connection = mysql.createConnection({
 	user: 'root',
 	password: ''
 })*/
-
+//
 connection.connect(function(error){
 	if(error){
 		throw error;

@@ -195,6 +195,7 @@ userCtrl.sendOcupations = async(req,res) =>{
  			};
 			res.send(response)
 		}else{
+			console.log('LAS OCUPACIONES PAAA', result)
 			const response = {
 				check: '1',
 				ocupations: result
@@ -469,7 +470,7 @@ userCtrl.userInfo = async(req, res) =>{
 if(req.headers.authorization == session.let.sesion){
 	console.log('estas en userInfo')
 	//const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
-	const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name, tbl_ocupations.ocupation, tbl_ocupations.id_ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
+	const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
 
 	connection.query(sql, function(err, result, fie){
 		if(err) {
@@ -513,7 +514,7 @@ userCtrl.contactInfo = async(req, res) =>{
   if(req.headers.authorization == session.let.sesion){
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
-		const sql= "SELECT email, first_name, last_name, phone_number1, address, website, tbl_ocupations.ocupation, tbl_ocupations.id_ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
+		const sql= "SELECT email, first_name, last_name, phone_number1, address, website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
 		connection.query(sql, function(err, result, fie){
 			if(err) {
 					console.log('error en la conexion intente de nuevo', err)
