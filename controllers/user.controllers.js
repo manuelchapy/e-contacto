@@ -338,6 +338,12 @@ userCtrl.contactList = async(req, res) =>{
 				res.send(response)
 				console.log('error en DB')
 			}else{
+				let complete_name;
+				for(const res of result){
+					complete_name = res.first_name + ' ' + res.last_name;
+					res.complete_name = complete_name;
+				}
+				console.log('CONTACTO!!!!!!',result)
 				const contacts = {
 					check: '1',
 					contacts: result
