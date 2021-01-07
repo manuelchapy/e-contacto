@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
 
 //local host
 
-/*nst connection = mysql.createConnection({
+/*const connection = mysql.createConnection({
 	host: 'localhost',
 	database: 'econtact_db',
 	user: 'root',
