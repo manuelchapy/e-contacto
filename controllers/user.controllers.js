@@ -325,7 +325,7 @@ userCtrl.contactList = async(req, res) =>{
 	if(req.headers.authorization == session.let.sesion){
 		
 		//console.log('EL TOKEN COMO GET',session.let.id);
-		const sql = "SELECT tbl_contacts.email, first_name, last_name, phone_number1, img_url,tbl_ocupations.id_ocupation, website, tbl_ocupations.ocupation FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared=tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
+		const sql = "SELECT tbl_contacts.email, first_name, last_name, id_card_template, phone_number1, img_url,tbl_ocupations.id_ocupation, website, tbl_ocupations.ocupation FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared=tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
 		console.log('sesion desde app',req.headers.authorization)
 		console.log('sesion desde api', session.let.sesion)
 		connection.query(sql, function(err, result, fie){
@@ -476,7 +476,7 @@ userCtrl.userInfo = async(req, res) =>{
 if(req.headers.authorization == session.let.sesion){
 	console.log('estas en userInfo')
 	//const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
-	const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
+	const sql= "SELECT first_name, last_name, city, id_card_template, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
 
 	connection.query(sql, function(err, result, fie){
 		if(err) {
@@ -520,7 +520,7 @@ userCtrl.contactInfo = async(req, res) =>{
   if(req.headers.authorization == session.let.sesion){
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
-		const sql= "SELECT email, first_name, last_name, phone_number1, address, website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
+		const sql= "SELECT email, first_name, last_name, id_card_template,phone_number1, address, website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
 		connection.query(sql, function(err, result, fie){
 			if(err) {
 					console.log('error en la conexion intente de nuevo', err)
