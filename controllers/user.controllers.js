@@ -232,7 +232,7 @@ userCtrl.completeUser = async(req,res) =>{
 	instagram } = req.body;
 	let base64 = req.body.img_64;
 
-	console.log('ocupacion', ocupation);
+	console.log('ocupacion antes!!!!!!!!!!!!!!!!!!!!1', instagram, twitter);
 	const sql= "SELECT ocupation, id_ocupation FROM tbl_ocupations";
     connection.query(sql, function(err, result, fie){
 		if(err){ 
@@ -242,7 +242,7 @@ userCtrl.completeUser = async(req,res) =>{
  			};
 			res.send(response)
 		}else{
-			console.log('desde complete', result[0].ocupation)
+			//console.log('desde complete', result[0].ocupation)
 			sendUser(result, ocupation)
 			//console.log('el result desde query', result)
 			//res.send(result)
@@ -277,29 +277,30 @@ async function sendUser(result){
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
 			}else{
-				console.log('!!!!! LA URL PA', result.secure_url)
-				console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
-				const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"',id_ocupation ='"+id_ocupation+"', img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
+				//console.log('!!!!! LA URL PA', result.secure_url)
+				//console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
+				const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', instagram = '"+instagram+"', twitter = '"+twitter+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"',id_ocupation ='"+id_ocupation+"', img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
 				connection.query(sql, function (error, results, fields) {
 					if(error){
 						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 						res.send('2');
-						console.log('ERROR', results);
+						//console.log('ERROR', results);
 					}
 					if(results){
 						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 						res.send('1');
-						console.log('Modifico pa con imagen', results);
+						//console.log('Modifico pa con imagen', results);
 					}
 				});
 			}
-			console.log('!!!ERRROR CLOUD', error)
+			//console.log('!!!ERRROR CLOUD', error)
 		});
 
 	}else{
 		//console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
 		//const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
-		const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
+		console.log('EN EL UPDATE!!!', twitter, instagram)
+		const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', instagram = '"+instagram+"', twitter = '"+twitter+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
 				connection.query(sql, function (error, results, fields) {
 					if(error){
 						res.send('2');
@@ -343,7 +344,7 @@ userCtrl.contactList = async(req, res) =>{
 					complete_name = res.first_name + ' ' + res.last_name;
 					res.complete_name = complete_name;
 				}
-				console.log('CONTACTO!!!!!!',result)
+				//console.log('CONTACTO!!!!!!',result)
 				const contacts = {
 					check: '1',
 					contacts: result
@@ -484,7 +485,7 @@ if(req.headers.authorization == session.let.sesion){
 				//connection.end();
 				res.send('3') //no pudo completar el registro
 			}else{
-				console.log('pa ve el result', result[0]);
+				//console.log('pa ve el result', result[0]);
 				//const resultJSON = result.map(res => res.toJSON());
 				let imgCloud = result[0].img_url
 				let base64;
