@@ -16,8 +16,8 @@ const connection = mysql.createConnection({
 	database: 'econtact_db',
 	user: 'root',
 	password: ''
-})
-////////*/
+})*/
+////////
 connection.connect(function(error){
 	if(error){
 		throw error;
