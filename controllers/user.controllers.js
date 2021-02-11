@@ -4,9 +4,9 @@ const connection = require('../src/database');
 const keygen = require("keygenerator");
 const bcrypt = require ('bcryptjs');
 const jwt = require('jsonwebtoken');
-var uniqid = require('uniqid');
+const uniqid = require('uniqid');
 const config = require('../src/config');
-var http = require('http'); 
+const http = require('http'); 
 const fs = require ("fs");
 const path = require('path');
 const uniqueKeygen = require('unique-keygen');
@@ -521,7 +521,7 @@ userCtrl.contactInfo = async(req, res) =>{
   if(req.headers.authorization == session.let.sesion){
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
-		const sql= "SELECT email, first_name, last_name, id_card_template,phone_number1, address, website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
+		const sql= "SELECT email, first_name, last_name, id_card_template,phone_number1, address, img_url ,website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
 		connection.query(sql, function(err, result, fie){
 			if(err) {
 					console.log('error en la conexion intente de nuevo', err)
