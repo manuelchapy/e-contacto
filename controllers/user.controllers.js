@@ -326,7 +326,7 @@ userCtrl.contactList = async(req, res) =>{
 	if(req.headers.authorization == session.let.sesion){
 		
 		//console.log('EL TOKEN COMO GET',session.let.id);
-		const sql = "SELECT tbl_contacts.email, first_name, last_name, tbl_contacts.id_card_template, phone_number1, img_url, website, company, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared = tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
+		const sql = "SELECT tbl_contacts.email, tbl_contacts.id_contact, first_name, last_name, tbl_contacts.id_card_template, phone_number1, img_url, website, company, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution FROM tbl_cards_shared INNER JOIN tbl_contacts ON tbl_cards_shared.id_contact_shared = tbl_contacts.id_contact INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE tbl_cards_shared.id_contact='"+session.let.id+"'";
 		console.log('sesion desde app',req.headers.authorization)
 		console.log('sesion desde api', session.let.sesion)
 		connection.query(sql, function(err, result, fie){
@@ -517,13 +517,12 @@ if(req.headers.authorization == session.let.sesion){
 }
 
 userCtrl.contactInfo = async(req, res) =>{
-
   if(req.headers.authorization == session.let.sesion){
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
 		//const sql= "SELECT email, first_name, last_name, id_card_template,phone_number1, address, img_url ,website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
-		const sql = "SELECT email, first_name, company, last_name, tokenQr,phone_number1, address, img_url, company, img_company, website, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution, tbl_cards_templates.url_template FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE email = '"+req.headers.email+"'";
-																																								 
+		const sql = "SELECT email, id_contact, first_name, company, last_name, tokenQr,phone_number1, address, img_url, company, img_company, website, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution, tbl_cards_templates.url_template FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE email = '"+req.headers.email+"'";
+		console.log('!!!!!!!!!AAAAAAAAAAAAAAAAAA')																																						 
 		connection.query(sql, function(err, result, fie){
 			if(err) {
 					console.log('error en la conexion intente de nuevo', err)
