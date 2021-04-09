@@ -472,6 +472,41 @@ userCtrl.addContact = async(req, res) =>{
     }
 }
 
+userCtrl.deleteContact = async(req, res) =>{
+	if(req.headers.authorization == session.let.sesion){
+		console.log('Estas en deleteContact')
+		console.log(req.body.id, session.let.id);
+		const sql= "DELETE FROM tbl_cards_shared WHERE id_contact = '"+session.let.id+"' AND id_contact_shared = '"+req.body.id+"'";
+		//const sql= "DELETE FROM tbl_cards_shared WHERE id_contact = 3001 AND id_contact_shared = 3032";
+		connection.query(sql, function(err, result, fie){
+			if(err){ 
+				//throw err;
+				const user = {
+						check: '3',
+						contact: []
+					}  
+				res.send(user)
+				console.log('error en DB')
+			}else{
+				const user = {
+					check: '1', //envioe
+					contact: []
+				}
+				res.send(user);	
+			}
+		});
+
+
+	}else{
+		const response = {
+			check: '0',
+			contacts: []
+		}
+		res.send(response)
+		console.log('sesion expirada')
+	}
+}
+
 userCtrl.userInfo = async(req, res) =>{
 
 if(req.headers.authorization == session.let.sesion){
