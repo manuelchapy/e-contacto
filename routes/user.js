@@ -18,6 +18,9 @@ router.route('/login')
 router.route('/addContact')
 		.post(Ctrlindex.addContact)
 
+router.route('/deleteContact')
+		.post(Ctrlindex.deleteContact)
+
 router.route('/contactList')
 		.get(Ctrlindex.contactList)
 
