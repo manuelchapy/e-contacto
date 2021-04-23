@@ -230,19 +230,18 @@ userCtrl.completeUser = async(req,res) =>{
 	const { id_business, ocupation, id_card_template, id_plan, email, passw, first_name, 
 	last_name, phone_number1, phone_number2, phone_number3, address, city, state, zip_code, website, twitter, linkedin, facebook, 
 	instagram } = req.body;
-	let base64 = req.body.img_64;
 
 	console.log('ocupacion antes!!!!!!!!!!!!!!!!!!!!1', instagram, twitter);
 	const sql= "SELECT ocupation, id_ocupation FROM tbl_ocupations";
     connection.query(sql, function(err, result, fie){
 		if(err){ 
-			throw err; 
+			//throw err; 
 			const response = {
    			check:  "3" //error de conexion con la DB
  			};
 			res.send(response)
 		}else{
-			//console.log('desde complete', result[0].ocupation)
+			console.log('desde complete', result[0].ocupation)
 			sendUser(result, ocupation)
 			//console.log('el result desde query', result)
 			//res.send(result)
@@ -263,42 +262,7 @@ async function sendUser(result){
 	 	}
 	 }	
 	//console.log('ERRR LASTNAME', lastName)
-	let unique = uniqueKeygen(5)
-	let imgNameCloud = unique+req.body.img_name;
-	if(base64.length > 0){
-		var ReadableData = require('stream').Readable;
-		const imageBufferData = Buffer.from(base64, 'base64');
-		var streamObj = new ReadableData();
-		streamObj.push(imageBufferData)
-		streamObj.push(null)
-		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
-		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
-			if(error){
-				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
-				res.send('2');
-			}else{
-				//console.log('!!!!! LA URL PA', result.secure_url)
-				//console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
-				const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', instagram = '"+instagram+"', twitter = '"+twitter+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"',id_ocupation ='"+id_ocupation+"', img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
-				connection.query(sql, function (error, results, fields) {
-					if(error){
-						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
-						res.send('2');
-						//console.log('ERROR', results);
-					}
-					if(results){
-						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
-						res.send('1');
-						//console.log('Modifico pa con imagen', results);
-					}
-				});
-			}
-			//console.log('!!!ERRROR CLOUD', error)
-		});
-
-	}else{
 		//console.log('EL id_ocupation en base64!!!!!!', id_ocupation)
-		//const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
 		console.log('EN EL UPDATE!!!', twitter, instagram)
 		const sql = "UPDATE tbl_contacts SET first_name = '"+first_name+"', last_name = '"+last_name+"', phone_number1 = '"+phone_number1+"', phone_number2 = '"+phone_number2+"', phone_number3 = '"+phone_number3+"', address = '"+address+"', state = '"+state+"', website = '"+website+"', linkedin = '"+linkedin+"', instagram = '"+instagram+"', twitter = '"+twitter+"', facebook = '"+facebook+"', zip_code = '"+zip_code+"', id_ocupation ='"+id_ocupation+"'WHERE id_contact = '"+session.let.id+"'";
 				connection.query(sql, function (error, results, fields) {
@@ -311,13 +275,138 @@ async function sendUser(result){
 						console.log('Modifico pa sin imagen', results);
 					}
 				});
-	}
 }
 	
  }else{
 		res.send('0')
 		console.log('sesion expirada')
  	}
+
+}
+
+userCtrl.imageUser = async(req, res) =>{
+
+	const sql = "SELECT id_contact ,img_url, img_name FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
+	//console.log('DESDE EL BODY', req.body.img_64);
+	connection.query(sql, function(err, result, fie){
+		if(err){ 
+			//throw err; 
+			const response = {
+					check: '3',
+					contacts: []
+				}  
+			res.send(response)
+			console.log('error en DB')
+		}else{	
+				console.log('EL RESULT', result)
+				let url = result[0].img_url;
+				let id = session.let.id;
+				if(url == null){
+					//////AGREGAR//////
+					//res.send('Se agrega url y nombre')
+					console.log('agregar imagen!')
+					let base64 = req.body.img_64;
+					add(id, base64);
+				}else{
+					//res.send('Se modifica url')
+					console.log('modificar imagen!')
+					let base64 = req.body.img_64;
+					let imgNameCloud = result[0].img_name;
+					let url = result[0].img_url;
+					update(url, base64, imgNameCloud);
+				}
+			//res.send(result);
+		}
+	});
+
+	//AGREGAR//
+	const add = async (id, base64) => {
+		//console.log('Entro a ADD', id, base64);
+		//let idStr = id.toString();
+		let imgNameCloud = id+'_profileImg'
+		//console.log('PA VE EL BASE 64 DESDE ADD!!!!', base64);
+
+		let ReadableData = require('stream').Readable;
+		const imageBufferData = Buffer.from(base64, 'base64');
+		var streamObj = new ReadableData();
+		streamObj.push(imageBufferData)
+		streamObj.push(null)
+		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+
+		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
+			if(error){
+				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+				res.send('2');
+			}else{
+				const sql = "UPDATE tbl_contacts SET img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
+				connection.query(sql, function (error, results, fields) {
+					if(error){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('2');
+						//console.log('ERROR', results);
+					}
+					if(results){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('1');
+						//console.log('Modifico pa con imagen', results);
+					}
+				});
+				//res.send('sirvio pa');
+			}
+			//console.log('!!!ERRROR CLOUD', error)
+		});
+	}
+
+
+	/////MODIFICAR//////
+	const update = async (url, base64, imgNameCloud) => {
+		await cloudinary.uploader.destroy(imgNameCloud, function(error,result) {
+			if(error){
+				res.send('2');
+			}else{
+				console.log('Lo elimino pasa a rehacer en cloud')
+				updateCloud(url, base64, imgNameCloud);
+			}
+		});
+
+	}
+
+	const updateCloud = async (url, base64, imgNameCloud) => {
+		//res.send('1');
+		//console.log('ENTRO A UPDATE', imgNameCloud)
+		//let imgNameCloud = session.let.id+'_profileImg'
+		let ReadableData = require('stream').Readable;
+		const imageBufferData = Buffer.from(base64, 'base64');
+		var streamObj = new ReadableData();
+		streamObj.push(imageBufferData)
+		streamObj.push(null)
+		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
+			if(error){
+				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+				res.send('2');
+			}else{
+				console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', imgNameCloud)
+				//fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+				//res.send('1');
+				const sql = "UPDATE tbl_contacts SET img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
+				connection.query(sql, function (error, results, fields) {
+					if(error){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('2');
+						//console.log('ERROR', results);
+					}
+					if(results){
+						fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
+						res.send('1');
+						//console.log('Modifico pa con imagen', results);
+					}
+				});
+				//res.send('sirvio pa');
+			}
+			//console.log('!!!ERRROR CLOUD', error)
+		});
+	}
 
 }
 
@@ -331,7 +420,7 @@ userCtrl.contactList = async(req, res) =>{
 		console.log('sesion desde api', session.let.sesion)
 		connection.query(sql, function(err, result, fie){
 			if(err){ 
-				throw err; 
+				//throw err; 
 				const response = {
 						check: '3',
 						contacts: []
@@ -510,7 +599,7 @@ userCtrl.deleteContact = async(req, res) =>{
 userCtrl.userInfo = async(req, res) =>{
 
 if(req.headers.authorization == session.let.sesion){
-	console.log('estas en userInfo')
+	console.log('estas en userInfo', session.let.id)
 	//const sql= "SELECT first_name, last_name, city, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, img_name FROM `tbl_contacts` WHERE id_contact = '"+session.let.id+"'";
 	const sql= "SELECT first_name, last_name, city, id_card_template, state, zip_code, phone_number1, phone_number2, phone_number3, address, website, facebook, instagram, twitter, linkedin, img_url, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE id_contact = '"+session.let.id+"'";
 
@@ -520,25 +609,36 @@ if(req.headers.authorization == session.let.sesion){
 				//connection.end();
 				res.send('3') //no pudo completar el registro
 			}else{
-				//console.log('pa ve el result', result[0]);
+				console.log('pa ve el result', result[0]);
 				//const resultJSON = result.map(res => res.toJSON());
 				let imgCloud = result[0].img_url
-				let base64;
-				console.log('LA IMAGEN PAAAAA', imgCloud);
-				const download = async () => {
-				  		let image = await axios.get(imgCloud, {responseType: 'arraybuffer'});
-						base64 = Buffer.from(image.data).toString('base64');
-						//console.log(base64, 'EL RAW DE AXIOOOOS')
-						result[0].img_64 = base64
-						const user = {
-							check: '1', //envioe
-							contact: result[0]
-						}
-						res.send(user);	
+				if(imgCloud == null){
+					//pa cuando no haya una url
+					const user = {
+						check: '1', //envioe
+						contact: result[0]
+					}
+					res.send(user);	
+
+				}else if(imgCloud != null){
+					//pa cuando haya una url de cloudinary y haya que modificar imagen
+					let base64;
+					console.log('LA IMAGEN PAAAAA', imgCloud);
+					const download = async () => {
+							let image = await axios.get(imgCloud, {responseType: 'arraybuffer'});
+							base64 = Buffer.from(image.data).toString('base64');
+							//console.log(base64, 'EL RAW DE AXIOOOOS')
+							result[0].img_64 = base64
+							const user = {
+								check: '1', //envioe
+								contact: result[0]
+							}
+							res.send(user);	
+					}
+					download();
 				}
-				download();
 				////////////////ENVIO DE JSON//////////////////////////////////////7
-			}	
+			}
 	})
 }else{
 		const response = {
@@ -556,7 +656,7 @@ userCtrl.contactInfo = async(req, res) =>{
 		console.log('estas en contactInfo')
 		console.log('El email del contacto', req.headers.email)
 		//const sql= "SELECT email, first_name, last_name, id_card_template,phone_number1, address, img_url ,website, tbl_ocupations.ocupation FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation WHERE email = '"+req.headers.email+"'";
-		const sql = "SELECT email, id_contact, first_name, company, last_name, tokenQr,phone_number1, address, img_url, company, img_company, website, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution, tbl_cards_templates.url_template FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE email = '"+req.headers.email+"'";
+		const sql = "SELECT email, id_contact, first_name, company, last_name, tokenQr,phone_number1, address, img_url, company, img_name_company, website, img_company_url, tbl_ocupations.ocupation, tbl_cards_templates.id_card_distribution, tbl_cards_templates.url_template FROM `tbl_contacts` INNER JOIN tbl_ocupations ON tbl_contacts.id_ocupation = tbl_ocupations.id_ocupation INNER JOIN tbl_cards_templates ON tbl_contacts.id_card_template = tbl_cards_templates.id_card_template WHERE email = '"+req.headers.email+"'";
 		console.log('!!!!!!!!!AAAAAAAAAAAAAAAAAA')																																						 
 		connection.query(sql, function(err, result, fie){
 			if(err) {
