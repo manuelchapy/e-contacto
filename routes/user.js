@@ -5,6 +5,9 @@ const router = Router();
 router.route('/completeUser')
 		.post(Ctrlindex.completeUser)
 
+router.route('/imageUser')
+		.post(Ctrlindex.imageUser)
+
 router.route('/sendOcupations')
 		.get(Ctrlindex.sendOcupations)
 
