@@ -306,16 +306,7 @@ userCtrl.imageUser = async(req, res) =>{
 					//res.send('Se agrega url y nombre')
 					console.log('agregar imagen!')
 					let base64 = req.body.img_64;
-					let imgNameCloud = id+'_profileImg'
-					//console.log('PA VE EL BASE 64 DESDE ADD!!!!', base64);
-			
-					let ReadableData = require('stream').Readable;
-					const imageBufferData = Buffer.from(base64, 'base64');
-					var streamObj = new ReadableData();
-					streamObj.push(imageBufferData)
-					streamObj.push(null)
-					streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
-					add(id, base64, imgNameCloud);
+					add(id, base64);
 				}else{
 					//res.send('Se modifica url')
 					console.log('modificar imagen!')
@@ -328,11 +319,24 @@ userCtrl.imageUser = async(req, res) =>{
 		}
 	});
 
+	function baseToImg(imgNameCloud, base64){
+		let ReadableData = require('stream').Readable;
+		const imageBufferData = Buffer.from(base64, 'base64');
+		var streamObj = new ReadableData();
+		streamObj.push(imageBufferData)
+		streamObj.push(null)
+		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+
+		return 1;
+	}
+
 	//AGREGAR//
-	const add = async (id, base64, imgNameCloud) => {
+	const add = async (id, base64) => {
 		//console.log('Entro a ADD', id, base64);
 		//let idStr = id.toString();
-
+		let imgNameCloud = id+'_profileImg'
+		let num = baseToImg(imgNameCloud, base64)
+		//console.log('PA VE EL BASE 64 DESDE ADD!!!!', base64);
 
 		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
@@ -378,12 +382,13 @@ userCtrl.imageUser = async(req, res) =>{
 		//res.send('1');
 		//console.log('ENTRO A UPDATE', imgNameCloud)
 		//let imgNameCloud = session.let.id+'_profileImg'
-		let ReadableData = require('stream').Readable;
+		/*let ReadableData = require('stream').Readable;
 		const imageBufferData = Buffer.from(base64, 'base64');
 		var streamObj = new ReadableData();
 		streamObj.push(imageBufferData)
 		streamObj.push(null)
-		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));*/
+		let num = baseToImg(imgNameCloud, base64)
 		cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
