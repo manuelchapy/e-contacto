@@ -320,8 +320,8 @@ userCtrl.imageUser = async(req, res) =>{
 	});
 
 	//AGREGAR//
-	const add = (id, base64) => {
-		
+	function add(id, base64){
+		console.log('ESTOY EN ADD DE IMAGEUSER!!')
 		//console.log('Entro a ADD', id, base64);
 		//let idStr = id.toString();
 		let imgNameCloud = id+'_profileImg'
@@ -360,7 +360,7 @@ userCtrl.imageUser = async(req, res) =>{
 
 
 	/////MODIFICAR//////
-	const update = (url, base64, imgNameCloud) => {
+	function update(url, base64, imgNameCloud){
 		console.log('PASO A UPDATE!!!')
 	    cloudinary.uploader.destroy(imgNameCloud, function(error,result) {
 			if(error){
@@ -373,7 +373,7 @@ userCtrl.imageUser = async(req, res) =>{
 
 	}
 
-	const updateCloud = (url, base64, imgNameCloud) => {
+	function updateCloud(url, base64, imgNameCloud){
 		console.log('PASO A UPDATE CLOUD');
 		//res.send('1');
 		//console.log('ENTRO A UPDATE', imgNameCloud)
