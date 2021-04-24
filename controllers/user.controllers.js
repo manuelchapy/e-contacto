@@ -14,9 +14,9 @@ const cloudinary = require('cloudinary').v2;
 const request = require('request');
 const axios = require('axios');
 cloudinary.config({
-	cloud_name: 'e-contact',
-	api_key: '437993576348565',
-	api_secret: 'Hab0-blpNqu6xCFV291J4EhtZ88'
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINAY_API_SECRET
 
 });
 
@@ -306,7 +306,16 @@ userCtrl.imageUser = async(req, res) =>{
 					//res.send('Se agrega url y nombre')
 					console.log('agregar imagen!')
 					let base64 = req.body.img_64;
-					add(id, base64);
+					let imgNameCloud = id+'_profileImg'
+					//console.log('PA VE EL BASE 64 DESDE ADD!!!!', base64);
+			
+					let ReadableData = require('stream').Readable;
+					const imageBufferData = Buffer.from(base64, 'base64');
+					var streamObj = new ReadableData();
+					streamObj.push(imageBufferData)
+					streamObj.push(null)
+					streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
+					add(id, base64, imgNameCloud);
 				}else{
 					//res.send('Se modifica url')
 					console.log('modificar imagen!')
@@ -320,18 +329,10 @@ userCtrl.imageUser = async(req, res) =>{
 	});
 
 	//AGREGAR//
-	const add = async (id, base64) => {
+	const add = async (id, base64, imgNameCloud) => {
 		//console.log('Entro a ADD', id, base64);
 		//let idStr = id.toString();
-		let imgNameCloud = id+'_profileImg'
-		//console.log('PA VE EL BASE 64 DESDE ADD!!!!', base64);
 
-		let ReadableData = require('stream').Readable;
-		const imageBufferData = Buffer.from(base64, 'base64');
-		var streamObj = new ReadableData();
-		streamObj.push(imageBufferData)
-		streamObj.push(null)
-		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
 
 		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
