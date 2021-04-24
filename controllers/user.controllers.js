@@ -381,7 +381,7 @@ userCtrl.imageUser = async(req, res) =>{
 		streamObj.push(imageBufferData)
 		streamObj.push(null)
 		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
-		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
+		cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
