@@ -320,8 +320,7 @@ userCtrl.imageUser = async(req, res) =>{
 	});
 
 	//AGREGAR//
-	function add(id, base64){
-		console.log('ESTOY EN ADD DE IMAGEUSER!!')
+	const add = async (id, base64) => {
 		//console.log('Entro a ADD', id, base64);
 		//let idStr = id.toString();
 		let imgNameCloud = id+'_profileImg'
@@ -334,7 +333,7 @@ userCtrl.imageUser = async(req, res) =>{
 		streamObj.push(null)
 		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
 
-		 cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
+		await cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
@@ -360,9 +359,9 @@ userCtrl.imageUser = async(req, res) =>{
 
 
 	/////MODIFICAR//////
-	function update(url, base64, imgNameCloud){
+	const update = async (url, base64, imgNameCloud) => {
 		console.log('PASO A UPDATE!!!')
-	    cloudinary.uploader.destroy(imgNameCloud, function(error,result) {
+		await cloudinary.uploader.destroy(imgNameCloud, function(error,result) {
 			if(error){
 				res.send('2');
 			}else{
@@ -373,8 +372,8 @@ userCtrl.imageUser = async(req, res) =>{
 
 	}
 
-	function updateCloud(url, base64, imgNameCloud){
-		console.log('PASO A UPDATE CLOUD');
+	const updateCloud = async (url, base64, imgNameCloud) => {
+		console.log('PASO A UPDATE CLOUD')
 		//res.send('1');
 		//console.log('ENTRO A UPDATE', imgNameCloud)
 		//let imgNameCloud = session.let.id+'_profileImg'
