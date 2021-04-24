@@ -360,6 +360,7 @@ userCtrl.imageUser = async(req, res) =>{
 
 	/////MODIFICAR//////
 	const update = async (url, base64, imgNameCloud) => {
+		console.log('PASO A UPDATE!!!')
 		await cloudinary.uploader.destroy(imgNameCloud, function(error,result) {
 			if(error){
 				res.send('2');
@@ -372,6 +373,7 @@ userCtrl.imageUser = async(req, res) =>{
 	}
 
 	const updateCloud = async (url, base64, imgNameCloud) => {
+		console.log('PASO A UPDATE CLOUD');
 		//res.send('1');
 		//console.log('ENTRO A UPDATE', imgNameCloud)
 		//let imgNameCloud = session.let.id+'_profileImg'
