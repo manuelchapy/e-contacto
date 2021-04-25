@@ -333,10 +333,8 @@ userCtrl.imageUser = async(req, res) =>{
 		streamObj.push(imageBufferData)
 		streamObj.push(null)
 		streamObj.pipe(fs.createWriteStream(path.join(__dirname,'../src/public/img/'+imgNameCloud)));
-
-		setTimeout(function(){
+		
 			return 1;
-		}, 2000); 
 	}
 
 	//AGREGAR//
