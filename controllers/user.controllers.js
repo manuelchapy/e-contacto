@@ -350,7 +350,7 @@ userCtrl.imageUser = async(req, res) =>{
 
 		cloudinary.uploader.upload(path.join(__dirname,'../src/public/img/'+imgNameCloud), {public_id: imgNameCloud}, function(error, result) { 
 			if(error){
-				console.log('Entro a ERROR cloudinary.uploader.upload!!!!!');
+				console.log('Entro a ERROR cloudinary.uploader.upload!!!!!------>', error);
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
 			}else{
