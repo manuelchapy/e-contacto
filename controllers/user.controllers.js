@@ -326,6 +326,7 @@ userCtrl.imageUser = async(req, res) =>{
 	});
 
 	function baseToImg(imgNameCloud, base64){
+		console.log('Entro a baseToImg!!!!!');
 		let ReadableData = require('stream').Readable;
 		const imageBufferData = Buffer.from(base64, 'base64');
 		var streamObj = new ReadableData();
@@ -339,7 +340,7 @@ userCtrl.imageUser = async(req, res) =>{
 	//AGREGAR//
 	//const add = async (id, base64) => {
 		function add(id, base64){
-		//console.log('Entro a ADD', id, base64);
+		console.log('Entro a ADD!!!!!');
 		//let idStr = id.toString();
 		let imgNameCloud = id+'_profileImg'
 		let num = baseToImg(imgNameCloud, base64)
@@ -350,6 +351,7 @@ userCtrl.imageUser = async(req, res) =>{
 				fs.unlinkSync(path.join(__dirname,'../src/public/img/'+imgNameCloud))
 				res.send('2');
 			}else{
+				console.log('Entro a cloudinary.uploader.upload!!!!!');
 				const sql = "UPDATE tbl_contacts SET img_url ='"+result.secure_url+"', img_name ='"+imgNameCloud+"' WHERE id_contact = '"+session.let.id+"'";
 				connection.query(sql, function (error, results, fields) {
 					if(error){
