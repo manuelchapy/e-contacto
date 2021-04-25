@@ -13,11 +13,17 @@ const uniqueKeygen = require('unique-keygen');
 const cloudinary = require('cloudinary').v2;
 const request = require('request');
 const axios = require('axios');
+require("dotenv").config();
+/*cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINAY_API_SECRET
+
+});*/
 cloudinary.config({
 	cloud_name: 'e-contact',
 	api_key: '433465425719276',
 	api_secret: 'tG4Lc9tHEh3czSjP3gY0gShyWnk'
-
 });
 
 
